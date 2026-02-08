@@ -1,15 +1,20 @@
-# Importing essential libraries and modules
-from langchain_community.llms import Ollama
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_ollama import OllamaLLM
+# # Importing essential libraries and modules
+# from langchain_community.llms import Ollama
+# from langchain_core.prompts import ChatPromptTemplate
+# from langchain_core.output_parsers import StrOutputParser
+# from langchain_ollama import OllamaLLM
 
 
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template ,jsonify, url_for, redirect
 import logging
 import re
-
+import os
+import subprocess
+import webbrowser
+import time
+from moveaoi import move_aoi_from_downloads
+AOI_PATH = "aoi.geojson"
 
 
 from flask import Flask, render_template, request
@@ -456,8 +461,12 @@ def weather_view():
 
 @app.route('/location')
 def location_view():
-    return render_template('location.html')
-
+    try:
+        print("🚀 Running integrated pipeline...")
+        subprocess.Popen(["python", "integrated_pipeline.py"])
+        return jsonify({"status": "success", "message": "Integrated pipeline started!"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
 
 # here ends
 
@@ -467,45 +476,45 @@ def format_output(text):
     return re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
 
 # Define chatbot initialization
-def initialise_llama3():
-    try:    
-        # Create chatbot prompt
-        create_prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", "You are my personal assistant"),
-                ("user", "Question: {question}")
-            ]
-        )
+# def initialise_llama3():
+#     try:    
+#         # Create chatbot prompt
+#         create_prompt = ChatPromptTemplate.from_messages(
+#             [
+#                 ("system", "You are my personal assistant"),
+#                 ("user", "Question: {question}")
+#             ]
+#         )
 
-        # Initialize OpenAI LLM and output parser
-        lamma_model = Ollama(model="llama3.2")
-        format_output = StrOutputParser()
+#         # Initialize OpenAI LLM and output parser
+#         lamma_model = Ollama(model="llama3.2")
+#         format_output = StrOutputParser()
 
-        # Create chain
-        chatbot_pipeline = create_prompt | lamma_model | format_output
-        return chatbot_pipeline
-    except Exception as e:
-        logging.error(f"Failed to initialize chatbot: {e}")
-        raise
+#         # Create chain
+#         chatbot_pipeline = create_prompt | lamma_model | format_output
+#         return chatbot_pipeline
+#     except Exception as e:
+#         logging.error(f"Failed to initialize chatbot: {e}")
+#         raise
 
-# Initialize chatbot
-chatbot_pipeline = initialise_llama3()
+# # Initialize chatbot
+# chatbot_pipeline = initialise_llama3()
 
-# Define route for home page
-@app.route('/chatbot', methods=['GET', 'POST'])
-def chatbot():
-    query_input = None
-    output = None
-    if request.method == 'POST':
-        query_input = request.form.get('query-input')
-        if query_input:
-            try:
-                response = chatbot_pipeline.invoke({'question': query_input})
-                output = format_output(response)
-            except Exception as e:
-                logging.error(f"Error during chatbot invocation: {e}")
-                output = "Sorry, an error occurred while processing your request."
-    return render_template('chatbot.html', query_input=query_input, output=output)
+# # Define route for home page
+# @app.route('/chatbot', methods=['GET', 'POST'])
+# def chatbot():
+#     query_input = None
+#     output = None
+#     if request.method == 'POST':
+#         query_input = request.form.get('query-input')
+#         if query_input:
+#             try:
+#                 response = chatbot_pipeline.invoke({'question': query_input})
+#                 output = format_output(response)
+#             except Exception as e:
+#                 logging.error(f"Error during chatbot invocation: {e}")
+#                 output = "Sorry, an error occurred while processing your request."
+#     return render_template('chatbot.html', query_input=query_input, output=output)
 
 # @app.route('/chatbot', methods=['GET', 'POST'])
 # def main():

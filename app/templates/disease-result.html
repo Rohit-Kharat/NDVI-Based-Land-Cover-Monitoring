@@ -1,4 +1,5 @@
-{% extends 'layout.html' %} {% block body %}
+{% extends 'layout.html' %} 
+{% block body %}
 
 <style>
   body {
@@ -43,36 +44,6 @@
     transition: transform 0.3s ease;
   }
 
-  .prediction-text::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      120deg,
-      transparent,
-      rgba(255, 255, 255, 0.4),
-      transparent
-    );
-    transition: 0.5s;
-  }
-
-  .prediction-text:hover::before {
-    left: 100%;
-  }
-
-  .prediction-text:hover {
-    transform: translateY(-2px);
-  }
-
-  @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-  }
-
   .prediction-text span {
     background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
     -webkit-background-clip: text;
@@ -81,16 +52,85 @@
     font-weight: 600;
     letter-spacing: 0.5px;
   }
+
+  /* Button for Voice Control */
+  .voice-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    background: #2d3436;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
+
+  .voice-button:hover {
+    background: #636e72;
+  }
 </style>
 
 <div class="container">
   <div class="row justify-content-center">
-      <div class="col-md-8">
-          <div class="card">
-            <p class="prediction-text mb-0"><span>{{ prediction }}</span></p>
-          </div>
+    <div class="col-md-8">
+      <div class="card">
+        <p class="prediction-text mb-0"><span id="prediction-text">{{ prediction }}</span></p>
+        <button id="voice-btn" class="voice-button" onclick="toggleSpeech()">🔊 Stop</button>
       </div>
+    </div>
   </div>
 </div>
+
+<script>
+  let speech = new SpeechSynthesisUtterance();
+  let isSpeaking = false; // Track speaking state
+
+  function speakPrediction() {
+    let text = document.getElementById("prediction-text").innerText;
+    
+    speech.text = text;
+    speech.lang = "mr-IN"; // Marathi Language
+    speech.rate = 1;
+    speech.pitch = 1;
+
+    let voices = speechSynthesis.getVoices();
+    let marathiVoice = voices.find(voice => voice.lang === "mr-IN");
+    if (marathiVoice) {
+      speech.voice = marathiVoice;
+    }
+
+    speechSynthesis.speak(speech);
+    isSpeaking = true;
+    document.getElementById("voice-btn").innerText = "🔇 Stop";
+  }
+
+  function toggleSpeech() {
+    if (isSpeaking) {
+      speechSynthesis.cancel(); // Stop speaking
+      isSpeaking = false;
+      document.getElementById("voice-btn").innerText = "🔊 Listen";
+    } else {
+      speakPrediction(); // Start speaking
+    }
+  }
+
+  // Auto-read prediction when page loads
+  window.onload = function () {
+    setTimeout(speakPrediction, 1000);
+  };
+
+  // Stop speech when user leaves the page or switches tab
+  window.addEventListener("beforeunload", function () {
+    speechSynthesis.cancel();
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      speechSynthesis.cancel();
+    }
+  });
+</script>
 
 {% endblock %}

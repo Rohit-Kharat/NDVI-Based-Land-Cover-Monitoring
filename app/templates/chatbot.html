@@ -1,118 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KrushiVikas</title>
-    <link
-      rel="shortcut icon"
-      href="{{ url_for('static', filename='images/patta.png') }}"
-    />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/patta.png') }}"/>
     <link rel="stylesheet" href="../static/style.css" type="text/css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="shortcut icon"
-      type="image/x-icon"
-      href="{{ url_for('static', filename='images/favicon.ico') }}"
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+        rel="stylesheet"
     />
     <style>
-      .detect-disease-button {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 16px;
-        text-transform: uppercase;
-        font-weight: bold;
-        background: rgb(145, 197, 138);
-        backdrop-filter: blur(20px);
-        padding: 20px;
-        color: #0d4608;
-        transition: 0.3s ease;
-        box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.07),
-          0px 2px 4px 0px rgba(0, 0, 0, 0.07),
-          0px 4px 8px 0px rgba(0, 0, 0, 0.07),
-          0px 8px 16px 0px rgba(0, 0, 0, 0.07),
-          0px 16px 32px 0px rgba(0, 0, 0, 0.07),
-          0px 32px 64px 0px rgba(0, 0, 0, 0.07);
-      }
+        .detect-disease-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            background: rgb(145, 197, 138);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            color: #0d4608;
+            transition: 0.3s ease;
+            box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.07),
+                        0px 2px 4px 0px rgba(0, 0, 0, 0.07),
+                        0px 4px 8px 0px rgba(0, 0, 0, 0.07),
+                        0px 8px 16px 0px rgba(0, 0, 0, 0.07),
+                        0px 16px 32px 0px rgba(0, 0, 0, 0.07),
+                        0px 32px 64px 0px rgba(0, 0, 0, 0.07);
+        }
 
-      .detect-disease-button:hover {
-        background-color: rgba(110, 213, 99, 0.663);
-      }
+        .detect-disease-button:hover {
+            background-color: rgba(110, 213, 99, 0.663);
+        }
+
+        .mic-button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .mic-button img {
+            width: 30px;
+            height: 30px;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
-    <button class="detect-disease-button" onclick="window.location.href='/'">
-      Home
-    </button>
+<body>
+    <button class="detect-disease-button" onclick="window.location.href='/'">Home</button>
 
     <div class="chat-app-container">
-      <div class="header">
-        <img
-          height="120px"
-          width="120px"
-          src="../static/images/llamabot.png"
-          alt=""
-        />
-        <h1 class="heading" style="color: black">Agro Chatbot</h1>
-      </div>
-      <form id="chat-form" method="POST" action="/chatbot">
-        <div class="form-container">
-          <input
-            type="text"
-            class="query-input"
-            id="query-input"
-            name="query-input"
-            required
-            placeholder="Type your message"
-            style="
-              background-color: transparent;
-              background: none;
-              color: black;
-            "
-          />
-          <button type="submit" class="submit-button">
-            <img src="../static/images/send-button.png" alt="send message" />
-          </button>
+        <div class="header">
+            <img height="120px" width="120px" src="../static/images/llamabot.png" alt=""/>
+            <h1 class="heading" style="color: black;">Agro Chatbot</h1>
         </div>
-      </form>
-      <div class="response-container">
-        <!-- <div class="loader"></div> -->
-        {% if query_input %}
+        <form id="chat-form" method="POST" action="/chatbot">
+            <div class="form-container">
+                <input
+                    type="text"
+                    class="query-input"
+                    id="query-input"
+                    name="query-input"
+                    required
+                    placeholder="Type or speak your message"
+                    style="background-color: transparent; color: black;"
+                />
+                <button type="button" class="mic-button" onclick="startVoiceRecognition()">
+                    <img src="../static/images/mic.jpeg" alt="Mic">
+                </button>
+                <button type="submit" class="submit-button">
+                    <img src="../static/images/send-button.png" alt="send message"/>
+                </button>
+            </div>
+        </form>
 
-        <div class="input-text-container">
-          <svg
-            width="25px"
-            height="25px"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM12 7.75C11.3787 7.75 10.875 8.25368 10.875 8.875C10.875 9.28921 10.5392 9.625 10.125 9.625C9.71079 9.625 9.375 9.28921 9.375 8.875C9.375 7.42525 10.5503 6.25 12 6.25C13.4497 6.25 14.625 7.42525 14.625 8.875C14.625 9.58584 14.3415 10.232 13.883 10.704C13.7907 10.7989 13.7027 10.8869 13.6187 10.9708C13.4029 11.1864 13.2138 11.3753 13.0479 11.5885C12.8289 11.8699 12.75 12.0768 12.75 12.25V13C12.75 13.4142 12.4142 13.75 12 13.75C11.5858 13.75 11.25 13.4142 11.25 13V12.25C11.25 11.5948 11.555 11.0644 11.8642 10.6672C12.0929 10.3733 12.3804 10.0863 12.6138 9.85346C12.6842 9.78321 12.7496 9.71789 12.807 9.65877C13.0046 9.45543 13.125 9.18004 13.125 8.875C13.125 8.25368 12.6213 7.75 12 7.75ZM12 17C12.5523 17 13 16.5523 13 16C13 15.4477 12.5523 15 12 15C11.4477 15 11 15.4477 11 16C11 16.5523 11.4477 17 12 17Z"
-              fill="#fff"
-            />
-          </svg>
-          <p class="input_query_text">{{ query_input }}</p>
+        <div class="response-container">
+            {% if query_input %}
+            <div class="input-text-container">
+                <p class="input_query_text">{{ query_input }}</p>
+            </div>
+            {% endif %}
+
+            {% if output %}
+            <div class="output-container" style="color: black;">
+                <p id="chatbot-response">{{ output|safe }}</p>
+                <button id="voice-btn" onclick="toggleVoice()">🔊 Listen</button>
+            </div>
+            {% endif %}
         </div>
-        {% endif %} {% if output %}
-        <div class="output-container" style="color: black">
-          <p>{{ output|safe }}</p>
-          <!-- Use the safe filter to render HTML from output -->
-        </div>
-        {% endif %}
-      </div>
     </div>
-  </body>
+
+    <script>
+        let recognition;
+        let speechSynthesis = window.speechSynthesis;
+        let utterance;
+
+        function startVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Your browser does not support voice recognition.");
+                return;
+            }
+            recognition = new webkitSpeechRecognition();
+            recognition.lang = "en-US";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = function(event) {
+                let transcript = event.results[0][0].transcript;
+                document.getElementById("query-input").value = transcript;
+            };
+
+            recognition.onerror = function(event) {
+                console.error("Speech recognition error", event.error);
+            };
+
+            recognition.start();
+        }
+
+        function toggleVoice() {
+            if (speechSynthesis.speaking) {
+                stopVoice();
+            } else {
+                speakText();
+            }
+        }
+
+        function speakText() {
+            let responseText = document.getElementById("chatbot-response")?.innerText;
+            if (!responseText) return;
+
+            utterance = new SpeechSynthesisUtterance(responseText);
+            utterance.lang = "en-US";
+            utterance.rate = 1;
+            utterance.volume = 1;
+            utterance.pitch = 1;
+
+            speechSynthesis.speak(utterance);
+            document.getElementById("voice-btn").innerText = "⏹ Stop";
+        }
+
+        function stopVoice() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+                document.getElementById("voice-btn").innerText = "🔊 Listen";
+            }
+        }
+
+        // Automatically start reading the response
+        window.onload = function() {
+            if (document.getElementById("chatbot-response")) {
+                speakText();
+            }
+        };
+
+        // Stop voice when leaving the page
+        window.onbeforeunload = function() {
+            stopVoice();
+        };
+    </script>
+</body>
 </html>

@@ -1,17 +1,113 @@
-{% extends 'layout.html' %} {% block body %}
+{% extends 'layout.html' %} 
+{% block body %}
 
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    padding: 20px;
+  }
 
+  .container {
+    margin: 6rem auto;
+  }
 
+  .card {
+    background: blanchedalmond;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(113, 168, 255, 0.15);
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
 
+  .prediction-text {
+    font-size: 24px;
+    font-weight: 500;
+    color: black;
+  }
 
+  /* Button for Voice Control */
+  .voice-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    background: #2d3436;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
 
-<div class="container py-2 mx-auto my-50 h-10 " style="margin: 9rem;">
-  <div class="row">
-      <div class="col-sm py-2 py-md-3">
-          <div class="card card-body" style="justify-content: center; background-color:blanchedalmond">
-               <p class="text-center" style="color: black; font-size: 20px;">{{ recommendation }}</p>
-          </div>
+  .voice-button:hover {
+    background: #636e72;
+  }
+</style>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <p class="prediction-text" id="recommendation-text">{{ recommendation }}</p>
+        <button id="voice-btn" class="voice-button" onclick="toggleSpeech()">🔊 Listen</button>
       </div>
+    </div>
   </div>
 </div>
+
+<script>
+  let speech = new SpeechSynthesisUtterance();
+  let isSpeaking = false;
+
+  function speakRecommendation() {
+    let text = document.getElementById("recommendation-text").innerText;
+    
+    speech.text = text;
+    speech.lang = "mr-IN"; // Marathi Language
+    speech.rate = 1;
+    speech.pitch = 1;
+
+    let voices = speechSynthesis.getVoices();
+    let marathiVoice = voices.find(voice => voice.lang === "mr-IN");
+    if (marathiVoice) {
+      speech.voice = marathiVoice;
+    }
+
+    speechSynthesis.speak(speech);
+    isSpeaking = true;
+    document.getElementById("voice-btn").innerText = "🔇 Stop";
+  }
+
+  function toggleSpeech() {
+    if (isSpeaking) {
+      speechSynthesis.cancel();
+      isSpeaking = false;
+      document.getElementById("voice-btn").innerText = "🔊 Listen";
+    } else {
+      speakRecommendation();
+    }
+  }
+
+  // Auto-read recommendation when page loads
+  window.onload = function () {
+    setTimeout(speakRecommendation, 1000);
+  };
+
+  // Stop speech when user leaves the page
+  window.onbeforeunload = function () {
+    speechSynthesis.cancel();
+  };
+
+  // Stop speech when tab is hidden (user switches tab)
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      speechSynthesis.cancel();
+      isSpeaking = false;
+      document.getElementById("voice-btn").innerText = "🔊 Listen";
+    }
+  });
+</script>
+
 {% endblock %}

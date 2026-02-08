@@ -29,7 +29,7 @@ body {
   margin-bottom: 50px;
 }
 .chat-app-container .heading {
-  color: white;
+  color: black;
   font-size: 50px;
 }
 .chat-app-container form {
@@ -67,7 +67,7 @@ body {
   flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
-  color: white;
+  color: black;
 }
 .chat-app-container form .form-container:focus-visible,
 .chat-app-container form .form-container:focus-within,
