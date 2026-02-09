@@ -16,7 +16,7 @@ ndvi_png = os.path.splitext(ndvi_tif)[0] + ".png"  # Same base name for output P
 with rasterio.open(ndvi_tif) as src:
     ndvi_data = src.read(1).astype(np.float32)
     profile = src.profile
-    bounds = src.bounds  # Get bounding box for Leaflet map
+    bounds = src.bounds  
 
 # Normalize NDVI for visualization (-1 to 1 mapped to 0-255)
 ndvi_normalized = ((ndvi_data - np.nanmin(ndvi_data)) /
