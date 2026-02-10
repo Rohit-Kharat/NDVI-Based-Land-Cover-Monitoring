@@ -8,28 +8,28 @@ from sentinelhub import (
     SentinelHubRequest, DataCollection
 )
 
-# CONFIGURE YOUR SENTINEL HUB ACCESS
+
 config = SHConfig()
 config.instance_id = "f8652b23-56d9-400c-8695-8a39d6b70892"
 config.sh_client_id = "f39eeddb-35fc-4d60-84a1-8a4167ca1969"
 config.sh_client_secret = "lPtjgh4IhqPm2F4bIUYKfB758Ma8HZbd"
-# PATHS
+
 aoi_path = "aoi.geojson"
 vv_path = "sentinel1/S1_VV.tif"
 vh_path = "sentinel1/S1_VH.tif"
 os.makedirs("sentinel1", exist_ok=True)
 
-# LOAD AOI
+
 aoi = gpd.read_file(aoi_path)
-bounds = aoi.total_bounds  # minx, miny, maxx, maxy
+bounds = aoi.total_bounds  
 bbox = BBox(bbox=tuple(bounds), crs=CRS.WGS84)
 resolution = 10
 width, height = bbox_to_dimensions(bbox, resolution=resolution)
 
-# DATE RANGE
+
 time_range = ("2024-12-01", "2025-03-01")
 
-# FUNCTION TO DOWNLOAD A POLARIZATION
+
 def download_sar_band(polarization, out_path):
     evalscript = f"""
     function setup() {{
