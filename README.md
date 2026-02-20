@@ -22,7 +22,7 @@ NDVI = (NIR - RED) / (NIR + RED)
 - NumPy, Matplotlib
 - Geospatial Analysis Tools
 
-## 📊 Features
+## 📊 Features & Update
 - NDVI computation
 - Vegetation health visualization
 - Land cover monitoring
