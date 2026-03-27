@@ -1,10 +1,3 @@
-# # Importing essential libraries and modules
-# from langchain_community.llms import Ollama
-# from langchain_core.prompts import ChatPromptTemplate
-# from langchain_core.output_parsers import StrOutputParser
-# from langchain_ollama import OllamaLLM
-
-
 
 from flask import Flask, request, render_template ,jsonify, url_for, redirect
 import logging
