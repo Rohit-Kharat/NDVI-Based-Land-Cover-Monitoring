@@ -18,7 +18,7 @@ def calculate_smi(vv_path, vh_path, output_path):
     plt.imsave(output_path, smi, cmap="Blues")
     print(f"✅ Soil Moisture Index saved to {output_path}")
 
-# 🔽 This block runs when you execute the file directly
+#mergeing the two tif files to get smi image
 if __name__ == "__main__":
     vv_path = "sentinel1/S1_VV.tif"
     vh_path = "sentinel1/S1_VH.tif"
