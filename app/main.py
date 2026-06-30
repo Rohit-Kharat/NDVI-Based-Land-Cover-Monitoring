@@ -51,7 +51,7 @@ def get_latlon_bounds():
 
             # Convert to lat/lon (EPSG:4326)
             latlon_bounds = transform_bounds(src_crs, "EPSG:4326", *bounds)
-            return latlon_bounds  # (min_lon, min_lat, max_lon, max_lat)
+            return latlon_bounds  
     except Exception as e:
         print(f"Error processing NDVI file: {e}")
         return None
